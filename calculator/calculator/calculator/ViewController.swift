@@ -15,14 +15,12 @@ class ViewController: UIViewController, UITextFieldDelegate {
     @IBOutlet weak var text: UITextField!
  
     //variables for switching between decimal and integer
-    var normal = true
     var double = false
-    var previous = 0
-    var current = 0
-    var sumbol = "="
-    var previousDouble = 0.0
-    var currentDouble = 0.0
-    var curretDecimals=0
+    var newInput = false
+
+    var symbol = "="
+    var previous = 0.0
+    var current = 0.0
     
     
     override func viewDidLoad() {
@@ -70,11 +68,17 @@ class ViewController: UIViewController, UITextFieldDelegate {
           textWrite(digit: "9")
     }
     @IBAction func double(_ sender: UIButton) {
-        textWrite(digit: ".")
+        if text.text!.range(of:".") != nil {
+           return
+        }
+        else{
+            textWrite(digit: ".")
+        }
     }
     func textWrite(digit: String){
-        if(digit=="." && double == true){
-            return
+        if newInput == true{
+            text.text = ""
+            newInput = false
         }
         if text.text=="0" {
             text.text = digit
@@ -83,22 +87,68 @@ class ViewController: UIViewController, UITextFieldDelegate {
         } else{
             text.text = text.text!+digit
         }
-        if(digit=="."){
-            double=true
+    }
+    func operation() {
+        current=Double(text.text!)!
+        previous=calculation()
+        current = 0.0
+        if (previous.truncatingRemainder(dividingBy: 1) > 0.0 ) {
+             text.text=String(previous)
+        } else{
+          text.text = String(Int(previous))
+        }
+        print(previous)
+        newInput = true
+    }
+    func calculation()->Double{
+        if symbol == "+"{
+            return previous + current
+        } else if symbol == "-"{
+            return previous - current
+        }
+         else if symbol == "*"{
+            return previous * current
+        }
+        else if symbol == "/"{
+            if current == 0 {
+                return 9999999999
+            }
+            return previous / current
+        }
+        else{
+            return current
         }
     }
     @IBAction func equal(_ sender: UIButton) {
-        
+        operation()
+        symbol = "="
+      
+
     }
     @IBAction func division(_ sender: UIButton) {
+        operation()
+        symbol = "/"
+      
     }
+    
     @IBAction func multiplication(_ sender: UIButton) {
+        operation()
+        symbol = "*"
+        
     }
     @IBAction func subtraction(_ sender: UIButton) {
+    
+        operation()
+        symbol = "-"
     }
     @IBAction func adition(_ sender: UIButton) {
+        operation()
+        symbol = "+"
+        
     }
     @IBAction func porcentage(_ sender: UIButton) {
+        operation()
+        symbol = "%"
     }
 }
 
